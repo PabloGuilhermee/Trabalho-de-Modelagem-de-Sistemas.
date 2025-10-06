@@ -1,0 +1,97 @@
+-- SCRIPT PARA CRIAÇÃO DO BANCO DE DADOS DA EMPRESA DE DESENVOLVIMENTO DE SOFTWARE
+-- Trabalho de Análise e Modelagem de Sistemas
+
+-- Criação da Tabela de Departamentos
+CREATE TABLE TBL_DEPARTAMENTO (
+    id_departamento INT PRIMARY KEY AUTO_INCREMENT,
+    nome VARCHAR(100) NOT NULL
+);
+
+-- Criação da Tabela de Colaboradores
+CREATE TABLE TBL_COLABORADOR (
+    id_colaborador INT PRIMARY KEY AUTO_INCREMENT,
+    nome VARCHAR(255) NOT NULL,
+    cargo VARCHAR(100) NOT NULL,
+    salario DECIMAL(10, 2) NOT NULL,
+    data_admissao DATE NOT NULL,
+    id_departamento INT,
+    FOREIGN KEY (id_departamento) REFERENCES TBL_DEPARTAMENTO(id_departamento)
+);
+
+-- Criação da Tabela de Clientes
+CREATE TABLE TBL_CLIENTE (
+    id_cliente INT PRIMARY KEY AUTO_INCREMENT,
+    nome VARCHAR(255) NOT NULL,
+    tipo ENUM('Pessoa Física', 'Pessoa Jurídica') NOT NULL,
+    email_contato VARCHAR(255) UNIQUE,
+    telefone_contato VARCHAR(20)
+);
+
+-- Criação da Tabela de Projetos
+CREATE TABLE TBL_PROJETO (
+    id_projeto INT PRIMARY KEY AUTO_INCREMENT,
+    nome VARCHAR(255) NOT NULL,
+    prazo DATE,
+    orcamento DECIMAL(12, 2),
+    status ENUM('Em andamento', 'Concluído', 'Pausado', 'Cancelado') NOT NULL,
+    id_cliente INT,
+    FOREIGN KEY (id_cliente) REFERENCES TBL_CLIENTE(id_cliente)
+);
+
+-- Criação da Tabela de Tarefas
+CREATE TABLE TBL_TAREFA (
+    id_tarefa INT PRIMARY KEY AUTO_INCREMENT,
+    descricao TEXT NOT NULL,
+    status ENUM('A fazer', 'Em progresso', 'Concluída') NOT NULL,
+    data_criacao DATE NOT NULL,
+    data_conclusao DATE,
+    id_projeto INT,
+    id_colaborador INT,
+    FOREIGN KEY (id_projeto) REFERENCES TBL_PROJETO(id_projeto),
+    FOREIGN KEY (id_colaborador) REFERENCES TBL_COLABORADOR(id_colaborador)
+);
+
+-- Criação da Tabela de Tecnologias
+CREATE TABLE TBL_TECNOLOGIA (
+    id_tecnologia INT PRIMARY KEY AUTO_INCREMENT,
+    nome VARCHAR(100) NOT NULL,
+    tipo ENUM('Linguagem', 'Framework', 'Banco de Dados', 'Ferramenta') NOT NULL
+);
+
+-- Criação da Tabela de Treinamentos
+CREATE TABLE TBL_TREINAMENTO (
+    id_treinamento INT PRIMARY KEY AUTO_INCREMENT,
+    nome VARCHAR(255) NOT NULL,
+    descricao TEXT,
+    data_realizacao DATE NOT NULL,
+    carga_horaria INT NOT NULL
+);
+
+-- Tabela Associativa para o relacionamento N..M entre Colaborador e Projeto
+CREATE TABLE TBL_COLABORADOR_PROJETO (
+    id_colaborador INT,
+    id_projeto INT,
+    papel_no_projeto VARCHAR(100),
+    PRIMARY KEY (id_colaborador, id_projeto),
+    FOREIGN KEY (id_colaborador) REFERENCES TBL_COLABORADOR(id_colaborador),
+    FOREIGN KEY (id_projeto) REFERENCES TBL_PROJETO(id_projeto)
+);
+
+-- Tabela Associativa para o relacionamento N..M entre Projeto e Tecnologia
+CREATE TABLE TBL_PROJETO_TECNOLOGIA (
+    id_projeto INT,
+    id_tecnologia INT,
+    PRIMARY KEY (id_projeto, id_tecnologia),
+    FOREIGN KEY (id_projeto) REFERENCES TBL_PROJETO(id_projeto),
+    FOREIGN KEY (id_tecnologia) REFERENCES TBL_TECNOLOGIA(id_tecnologia)
+);
+
+-- Tabela Associativa para o relacionamento N..M entre Colaborador e Treinamento
+CREATE TABLE TBL_COLABORADOR_TREINAMENTO (
+    id_colaborador INT,
+    id_treinamento INT,
+    data_inscricao DATE NOT NULL,
+    PRIMARY KEY (id_colaborador, id_treinamento),
+    FOREIGN KEY (id_colaborador) REFERENCES TBL_COLABORADOR(id_colaborador),
+    FOREIGN KEY (id_treinamento) REFERENCES TBL_TREINAMENTO(id_treinamento)
+);
